@@ -50,19 +50,19 @@ func main() {
 		log.Fatalf("서버 인증서/키 로드 실패: %v", err)
 	}
 
-	clientCertPEM, err := ioutil.ReadFile("./certs/client.crt")
+	caCert, err := ioutil.ReadFile("./certs/ca.crt")
 	if err != nil {
-		log.Fatalf("클라이언트 인증서 파일 읽기 실패: %v", err)
+		log.Fatalf("CA 인증서 파일 읽기 실패: %v", err)
 	}
-	clientCertPool := x509.NewCertPool()
-	if ok := clientCertPool.AppendCertsFromPEM(clientCertPEM); !ok {
-		log.Fatalf("클라이언트 인증서 추가 실패")
+	clientCAs := x509.NewCertPool()
+	if ok := clientCAs.AppendCertsFromPEM(caCert); !ok {
+		log.Fatalf("CA 인증서 추가 실패")
 	}
 
 	tlsConfig := &tls.Config{
 		Certificates: []tls.Certificate{serverCert},
 		ClientAuth:   tls.RequireAndVerifyClientCert,
-		ClientCAs:    clientCertPool,
+		ClientCAs:    clientCAs,
 	}
 
 	server := &http.Server{

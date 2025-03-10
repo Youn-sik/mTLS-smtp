@@ -26,17 +26,17 @@ func main() {
 		log.Fatalf("클라이언트 인증서 로드 실패: %v", err)
 	}
 
-	// 서버 인증서를 읽어와서 신뢰할 CA 풀 생성
-	caCert, err := ioutil.ReadFile("./certs/server.crt")
+	// CA 인증서를 읽어와서 신뢰할 CA 풀 생성
+	caCert, err := ioutil.ReadFile("./certs/ca.crt")
 	if err != nil {
-		log.Fatalf("서버 인증서 파일 읽기 실패: %v", err)
+		log.Fatalf("CA 인증서 파일 읽기 실패: %v", err)
 	}
 	caCertPool := x509.NewCertPool()
 	if ok := caCertPool.AppendCertsFromPEM(caCert); !ok {
-		log.Fatalf("서버 인증서 추가 실패")
+		log.Fatalf("CA 인증서 추가 실패")
 	}
 
-	// TLS 클라이언트 설정: 클라이언트 인증서 제공 및 서버 인증서 검증
+	// TLS 클라이언트 설정: 클라이언트 인증서 제공 및 CA 인증서 검증
 	tlsConfig := &tls.Config{
 		Certificates: []tls.Certificate{clientCert},
 		RootCAs:      caCertPool,

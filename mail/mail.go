@@ -29,7 +29,18 @@ type Mail struct {
 	Wc     io.WriteCloser
 }
 
+func VerifyEnv() {
+	if SMTP_SERVER == "" {
+		panic(fmt.Errorf("===ERROR===\n%+s", "No Env Readed: SMTP_SERVER"))
+	}
+	if SENDER_MAIL == "" {
+		panic(fmt.Errorf("===ERROR===\n%+s", "No Env Readed: SENDER_MAIL"))
+	}
+}
+
 func NewMail() *Mail {
+	VerifyEnv()
+
 	// Connect to the remote SMTP server.
 	c, err := smtp.Dial(SMTP_SERVER)
 	if err != nil {
