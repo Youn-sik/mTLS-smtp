@@ -54,7 +54,7 @@ func main() {
 	reqBody := MailRequest{
 		From:    "FROM <FROM@ai.kr>",
 		To:      "yscho20@koolsign.net",
-		Subject: "[PROJECT] 테스트 이메일 전송",
+		Subject: "[PrOjEcT] 테스트 이메일 전송",
 		Msg:     []byte("안녕하세요. [PROJECT] 서비스입니다."),
 	}
 

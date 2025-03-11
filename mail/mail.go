@@ -3,12 +3,9 @@ package mail
 import (
 	"fmt"
 	"io"
+	"mailHttpToSmtp/utils"
 	"net/smtp"
-	"os"
 )
-
-var SMTP_SERVER = os.Getenv("SMTP_SERVER")
-var SENDER_MAIL = os.Getenv("SENDER_MAIL")
 
 // MailRequest는 POST /send_mail 요청에서 전달받을 JSON 데이터 구조입니다.
 type MailRequest struct {
@@ -30,10 +27,10 @@ type Mail struct {
 }
 
 func VerifyEnv() {
-	if SMTP_SERVER == "" {
+	if utils.SMTP_SERVER == "" {
 		panic(fmt.Errorf("===ERROR===\n%+s", "No Env Readed: SMTP_SERVER"))
 	}
-	if SENDER_MAIL == "" {
+	if utils.SENDER_MAIL == "" {
 		panic(fmt.Errorf("===ERROR===\n%+s", "No Env Readed: SENDER_MAIL"))
 	}
 }
@@ -42,7 +39,7 @@ func NewMail() *Mail {
 	VerifyEnv()
 
 	// Connect to the remote SMTP server.
-	c, err := smtp.Dial(SMTP_SERVER)
+	c, err := smtp.Dial(utils.SMTP_SERVER)
 	if err != nil {
 		fmt.Errorf("===ERROR===\n%+v", err)
 		return nil
@@ -57,7 +54,7 @@ func NewMail() *Mail {
 }
 
 func (m *Mail) InitMailSenderAndRecipient(to string) error {
-	err := m.Client.Mail(SENDER_MAIL)
+	err := m.Client.Mail(utils.SENDER_MAIL)
 	if err != nil {
 		return fmt.Errorf("===ERROR[%s]===\n%+v", "Sender information error", err)
 	}
@@ -74,6 +71,8 @@ func (m *Mail) SetMailHeaderBodyToWc(from, to, subject, context string) error {
 	m.Header["From"] = from
 	m.Header["To"] = to
 	m.Header["Subject"] = subject
+	m.Header["Date"] = utils.GetDate()
+	m.Header["Message-ID"] = utils.GetMessageId(utils.MAIL_DOMAIN)
 
 	var err error
 
